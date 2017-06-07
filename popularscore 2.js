@@ -17,7 +17,7 @@ function google_trend(google_kw,the_kw){
 				function(err, results){
   					if(err) console.error('there was an error!', err);
   					else {	
-  							// console.log('the_kw',the_kw);
+  							
   							if (results.length > 50) { 
 	  							var res_data=results.split('}');
 								for (var i = 7 ; i >4; i--) {
@@ -28,6 +28,7 @@ function google_trend(google_kw,the_kw){
 		  							console.log('the_value[1]=',the_value[1]);
 		  						}
 	  						}
+
 							all_fields=kw_sum;
 							console.log('all_fields=',all_fields);
 							the_flag=true;
@@ -59,19 +60,16 @@ function readTextFile(file)
 			    	fields = lines[line].split('" "');
 					google_kw= fields[10].split(' ');
 					console.log('google_kw=',google_kw);
-					all_fields=Number(0);
-			    	the_kw=google_kw.length - 1;
+			    	all_fields=Number(0);
+					the_kw=google_kw.length - 1;
 
-					while((the_kw>=0)){
-						if (flag) {
-							flag=false;
-							flag=google_trend(google_kw,the_kw);
-							sleep(1000);
-							the_kw--;
-							console.log('the_kw',the_kw);
-							console.log('flag',flag);
-						}
+					while(flag && (the_kw>=0)){
+						flag=false;
+						flag=google_trend(google_kw,the_kw);
+						the_kw--;
+						console.log('the_kw',the_kw);
 					}
+
 			    }
 
             }
@@ -81,5 +79,6 @@ function readTextFile(file)
 }
 
 readTextFile('file:///Users/sarahcheng/Documents/Master/2017Spring/Datamining/final_project/task2/T2-TRAIN/output.rtf');
+
 
 
