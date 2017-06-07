@@ -9,34 +9,36 @@ function sleep(milliseconds) {
     }
   }
 }
-function google_trend(google_kw,the_kw){
-		var the_flag=false;
-		var kw_sum=Number(0);
-		console.log('google_kw[the_kw]=',google_kw[the_kw]);
-		googleTrends.interestOverTime({keyword:google_kw[the_kw] , startTime: new Date('2015-02-15'),startTime: new Date('2015-03-14')}, 
-				function(err, results){
-  					if(err) console.error('there was an error!', err);
-  					else {	
-  							
-  							if (results.length > 50) { 
-	  							var res_data=results.split('}');
-								for (var i = 7 ; i >4; i--) {
-		  							var a_daydata=res_data[res_data.length-i].split(',');//倒數三天的data
-		  							var the_element=a_daydata[a_daydata.length-1].split(':');
-		  							var the_value=the_element[1].split('"');
-		  							kw_sum=kw_sum+Number(the_value[1]);
-		  							console.log('the_value[1]=',the_value[1]);
+function google_trend(google_kw,the_kw,busy){
+		// var the_flag=false;
+		if (!busy) {
+			busy=true;
+			var kw_sum=Number(0);
+			console.log('google_kw[the_kw]=',google_kw[the_kw]);
+			googleTrends.interestOverTime({keyword:google_kw[the_kw] , startTime: new Date('2015-02-15'),startTime: new Date('2015-03-14')}, 
+					function(err, results){
+	  					if(err) console.error('there was an error!', err);
+	  					else {	
+	  							
+	  							if (results.length > 50) { 
+		  							var res_data=results.split('}');
+									for (var i = 7 ; i >4; i--) {
+			  							var a_daydata=res_data[res_data.length-i].split(',');//倒數三天的data
+			  							var the_element=a_daydata[a_daydata.length-1].split(':');
+			  							var the_value=the_element[1].split('"');
+			  							kw_sum=kw_sum+Number(the_value[1]);
+			  							console.log('the_value[1]=',the_value[1]);
+			  						}
 		  						}
-	  						}
 
-							all_fields=kw_sum;
-							console.log('all_fields=',all_fields);
-							the_flag=true;
-							console.log('the_flag',the_flag);
-							return the_flag;
-					}	
-		})
-	
+								all_fields=kw_sum;
+								console.log('all_fields=',all_fields);
+								busy=false;
+								console.log('the_flag',the_flag);
+								return busy;
+						}	
+			})
+		}
 }
 function readTextFile(file)
 {
@@ -62,13 +64,11 @@ function readTextFile(file)
 					console.log('google_kw=',google_kw);
 			    	all_fields=Number(0);
 					the_kw=google_kw.length - 1;
-
-					while(flag && (the_kw>=0)){
-						flag=false;
-						flag=google_trend(google_kw,the_kw);
-						the_kw--;
-						console.log('the_kw',the_kw);
-					}
+					var isbusy=true;
+					isbusy=google_trend(google_kw,the_kw,flag);
+					the_kw--;
+					console.log('the_kw',the_kw);
+					
 
 			    }
 
