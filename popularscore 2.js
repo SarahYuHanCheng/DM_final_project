@@ -1,10 +1,6 @@
-var myArgs = process.argv.slice(2);
+// var myArgs = process.argv.slice(2);
 
-var head=myArgs.slice(0,2);
-var tags=myArgs.slice(2,myArgs.length-1);
-
-var postdate = new Date((myArgs[myArgs.length-1]-72000)*1000);
-var postdate_3 = new Date((myArgs[myArgs.length-1]-216000)*1000);
+var head,tags,postdate_1,postdate_3 
 
 const fs_write = require('fs');
 const check = require('fs');
@@ -72,28 +68,38 @@ function tag_google_trend(google_kw,the_kw,postday_3,postday,fd_t){
 		
 }
 function main(){
+var rawdata = readTextFile('file:///Users/sarahcheng/Documents/Master/2017Spring/Datamining/final_project/task2/T2-TRAIN/output.rtf');
+	    var line = 9;
+	    
+	    do{
+	    		fields = rawdata[line].split('" "');
+	    		
+	    		head=fields.slice(3,5);
+	    		
+				tags=fields[10].split(' ');
+				postdate_1 = new Date((fields[fields.length-4]-72000)*1000);
+				postdate_3 = new Date((fields[fields.length-4]-216000)*1000);
 
-	    // do{
-    	fs_write.open("/Users/sarahcheng/Documents/Master/2017Spring/Datamining/final_project/task2/T2-TRAIN/output.txt", 'a', 0666, 
-    		function(err, fd){
-				var h_the_kw=0;
-				
-				do {
-						google_trend(head,h_the_kw,postdate_3,postdate,fd);
-						h_the_kw++;
+		    	fs_write.open("/Users/sarahcheng/Documents/Master/2017Spring/Datamining/final_project/task2/T2-TRAIN/output.txt", 'a', 0666, 
+		    		function(err, fd){
+						var h_the_kw=0;
+						
+						do {
+								google_trend(head,h_the_kw,postdate_3,postdate_1,fd);
+								h_the_kw++;
 
-					}while(head.length >h_the_kw)	
+							}while(head.length >h_the_kw)	
 
-				the_kw=0;
-				do {
-					tag_google_trend(tags,the_kw,postdate_3,postdate,fd);
-					the_kw++;
-				}while(tags.length >the_kw)	
-				fs_write.write(fd,"\n");
+						// the_kw=0;
+						// do {
+						// 	tag_google_trend(tags,the_kw,postdate_3,postdate_1,fd);
+						// 	the_kw++;
+						// }while(tags.length >the_kw)	
+						fs_write.write(fd,"\n");
 
-			});
-   
-		// }while()
+					});
+   			line++;
+		}while(line < rawdata.length)
 }
 
 	
@@ -101,9 +107,9 @@ function google_trend(google_kw_h,the_kw_h,postday_3,postday,fd_h){
 
 		var googleTrends_h = require('google-trends-api');
 		var kw_sum_h=Number(0);
-
+		console.log('google_kw_h[the_kw]',google_kw_h[the_kw_h]);
 		
-		googleTrends_h.interestOverTime({keyword:google_kw_h[the_kw_h], startTime: postday_3 ,endTime: postday}, 
+		googleTrends_h.interestOverTime({keyword:'Fashion', startTime: new Date('2015-11-29') ,endTime: new Date('2015-12-29')}, 
 				function(err, results_h){
 
   					if(err) {
@@ -112,33 +118,33 @@ function google_trend(google_kw_h,the_kw_h,postday_3,postday,fd_h){
   					}
   					else {	
   							
-  							if (results_h.length > 50) { 
-  								var res_data_h=results_h.split('}');
+  				// 			if (results_h.length > 50) { 
+  				// 				var res_data_h=results_h.split('}');
 	  							
-								for (var i = 7 ; i >4; i--) {
-		  							var a_daydata_h=res_data_h[res_data_h.length-i].split(',');//倒數三天的data
-		  							var the_element_h=a_daydata_h[a_daydata_h.length-1].split(':');
-		  							var the_value_h=the_element_h[1].split('"');
-		  							kw_sum_h=kw_sum_h+Number(the_value_h[1]);
+						// 		for (var i = 7 ; i >4; i--) {
+		  		// 					var a_daydata_h=res_data_h[res_data_h.length-i].split(',');//倒數三天的data
+		  		// 					var the_element_h=a_daydata_h[a_daydata_h.length-1].split(':');
+		  		// 					var the_value_h=the_element_h[1].split('"');
+		  		// 					kw_sum_h=kw_sum_h+Number(the_value_h[1]);
 		  						
-		  						}
-		  						if (the_kw_h==1 && count==0) {
-									temp=kw_sum_h;
+		  		// 				}
+		  		// 				if (the_kw_h==1 && count==0) {
+						// 			temp=kw_sum_h;
 
-								}else{
-									head_score=head_score+' '+kw_sum_h;	
-								}
-								count++;
+						// 		}else{
+						// 			head_score=head_score+' '+kw_sum_h;	
+						// 		}
+						// 		count++;
 
-		  						if (count==2) {
-		  							if (temp>0) {
-		  								head_score=head_score+' '+temp;
-		  							}
-		  							fs_write.write(fd_h,'  '+head_score );
-		  						}
-	  						}
+		  		// 				if (count==2) {
+		  		// 					if (temp>0) {
+		  		// 						head_score=head_score+' '+temp;
+		  		// 					}
+		  		// 					fs_write.write(fd_h,'  '+head_score );
+		  		// 				}
+	  			// 			}
 							
-						kw_sum_h=0;
+						// kw_sum_h=0;
 														
 							
 					}	
@@ -148,7 +154,29 @@ function google_trend(google_kw_h,the_kw_h,postday_3,postday,fd_h){
 		
 }
 
-
+function readTextFile(file)
+{
+	var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    var rawFile = new XMLHttpRequest();
+   	rawFile.open("GET", file, false);
+    var all_fields=Number(0);
+    var allText,lines,fields,google_kw,google_kw_split,data_scores;
+    var flag;
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status == 0)
+            {
+                allText = rawFile.responseText;
+                lines = allText.split('\n');
+                
+            }
+        }
+    }
+    rawFile.send(null);
+    return lines;
+}
 
 
 
