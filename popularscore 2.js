@@ -18,17 +18,17 @@ var t_count=0;
 var count=0;
 var temp=-1;
 var the_keys;
+
 main();
 
 
-function google_trend(google_kw,the_kw,postday_3,postday){
+function google_trend(google_kw,the_len,postday_3,postday,fd){
 
 		
 		var googleTrends = require('google-trends-api');
-					
-		googleTrends.interestOverTime({keyword:google_kw, startTime: postday_3 ,endTime: postday}, 
+		var avg_score;			
+		googleTrends.interestOverTime({keyword:'dre', startTime: postday_3 ,endTime: postday}, 
 				function(err, results){
-
   					if(err) {
   						console.error('there was an error!', err);
   						return 0;
@@ -36,28 +36,25 @@ function google_trend(google_kw,the_kw,postday_3,postday){
   					else {	
   						
 							var res_data=results.split(',"averages":[');
-							
 							var sp_res_data=res_data[1].split("]");
-							var avg_score=sp_res_data[0];
-							console.log('avg_score',avg_score);
-							t_count++;
-							if (t_count>Math.ceil(the_kw/5)) {
-  							fs_write.open("/Users/sarahcheng/Documents/Master/2017Spring/Datamining/final_project/task2/T2-TRAIN/output.txt", 'a', 0666, 
-    							function(err, fd){
-    								if(err) {
-											console.log('err',err);
-										}else{
-											console.log('avg_score',avg_score);
-											fs_write.write(fd,avg_score+"\n");
+							// if (t_count>Math.ceil(the_len/5)) {
+  							// fs_write.open("/Users/sarahcheng/Documents/Master/2017Spring/Datamining/final_project/task2/T2-TRAIN/output.txt", 'a', 0666, 
+    					// 		function(err, fd){
+    					// 			if(err) {
+									// 		console.log('err',err);
+									// 	}else{
+											console.log('results',results);
+											// fs_write.write(fd,sp_res_data[0]+' ');
 											// check.open("/Users/sarahcheng/Desktop/check.txt",'w',0666,function(err, fd_check){
 		    					// 				check.write(fd_check,"OK");
-											// });
+										// }
 
-									});
+									// });
 
-							}
+								// });
+							// }
+					}
 
-					}	
 				
 		});
 					
@@ -66,54 +63,32 @@ function google_trend(google_kw,the_kw,postday_3,postday){
 		return 0;
 		
 }
-
+the_keys='codyaugustinephotographycatdogeggmi';
+var kws_len=the_keys.length;
 function main(){
 
-		var rawdata = readTextFile('file:///Users/sarahcheng/Documents/Master/2017Spring/Datamining/final_project/task2/T2-TRAIN/t2_train_data.txt');
-	    var line = 7;
-	    var flag=1;
-	    // while(true){
-	    	
-	    	// if (flag) {
-	    		// flag=0;
-	    		fields = rawdata[line].split('" "');
-	    		console.log('fields',fields);
-	    		head=fields.slice(3,5);
-				tags=fields[10].split(' ');
-				var kws=head.concat(tags) ;
-				postdate_1 = new Date((fields[fields.length-4]-72000)*1000);
-				postdate_3 = new Date((fields[fields.length-4]-216000)*1000);
+		// var rawdata = readTextFile('file:///Users/sarahcheng/Documents/Master/2017Spring/Datamining/final_project/task2/T2-TRAIN/tags.txt');
+	 //    var line = 7;
+	 //    var flag=1;
+	 //    		// fields = rawdata.split('\n');
+	 //    		// console.log('fields',fields);
+	 //   //  		head=fields.slice(3,5);
+		// 		// tags=fields[10].split(' ');
+		// 		// var kws=head.concat(tags) ;
+		// 		postdate_1 = new Date('2017-06-09');//((fields[fields.length-4]-72000)*1000);
+		// 		postdate_3 = new Date('2017-06-06');//((fields[fields.length-4]-216000)*1000);
 				
-		    	// fs_write.open("/Users/sarahcheng/Documents/Master/2017Spring/Datamining/final_project/task2/T2-TRAIN/output.txt", 'a', 0666, 
-		    	// 	function(err, fd){
-		    			
-						
-						var kws_len=kws.length;
-						// do {
-						(function loop(i) {
-						    if (i <= len-1 ) new Promise(resolve => {
-						    	the_keys=google_kw.slice(i,i+5);
-						        console.log('the_keys',the_keys);
-						        google_trend(kws,kws_len,postdate_3,postdate_1);
-						        setTimeout(resolve, Math.random() * 10);
-						    }).then(loop.bind(null, i+5));
-						})(0);
-						flag=1;
-						sleep(1000);
-						// 	the_kw++;
-						// }while(tags.length >the_kw)	
-						// fs_write.write(fd,line+"\n");
-					// 	if(err) {
-					// 	console.log('err',err);
-					// 	}else{
-					// 		console.log('lineiiii',line);
-							
-					// 	}
-					// });
-	   			line++;
-	   			// if(line==rawdata.length-1){break;}//if filetype is .rtf, the condition need to change to if(line==rawdata.length-1)
-	   			// }
-		// }
+		// 		var kws_len=rawdata.length;
+				fs_write.open("/Users/sarahcheng/Documents/Master/2017Spring/Datamining/final_project/task2/T2-TRAIN/tags_score.txt", 'a', 0666, 
+    					function(err, fd){
+		// 					(function loop(i) {
+		// 					    if (i <= kws_len-1 ) new Promise(resolve => {
+		// 					    	the_keys=rawdata.slice(i,i+5);
+							        google_trend(the_keys,kws_len,postdate_3,postdate_1,fd);
+// 							        setTimeout(resolve, Math.random() * 500);
+// 							    }).then(loop.bind(null, i+5));
+// 							})(0);	
+						});
 }
 
 function readTextFile(file)
@@ -139,3 +114,5 @@ function readTextFile(file)
     rawFile.send(null);
     return lines;
 }
+
+
